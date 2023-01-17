@@ -1,0 +1,48 @@
+D:\00_code\05
+├─.gitignore
+├─babel.config.js
+├─jsconfig.json
+├─package-lock.json
+├─package.json
+├─Progress.md
+├─README.md
+├─vue.config.js
+├─src
+|  ├─App.vue
+|  ├─main.js
+|  ├─components
+|  |     └Main.vue
+|  ├─assets
+|  |   └logo.png
+├─public
+|   ├─favicon.ico
+|   └index.html
+├─progress_res
+|      ├─屏幕截图 2023-01-13 144722.png
+|      └屏幕截图 2023-01-13 152035.png
+├─dist
+|  ├─favicon.ico
+|  ├─index.html
+|  ├─js
+|  | ├─app.f08a590f.js
+|  | ├─app.f08a590f.js.map
+|  | ├─chunk-vendors.27212b30.js
+|  | └chunk-vendors.27212b30.js.map
+|  ├─fonts
+|  |   ├─element-icons.f1a45d74.ttf
+|  |   └element-icons.ff18efd1.woff
+|  ├─css
+|  |  ├─app.36777e0a.css
+|  |  └chunk-vendors.e7270478.css
+├─.idea
+|   ├─.gitignore
+|   ├─05.iml
+|   ├─jsLibraryMappings.xml
+|   ├─modules.xml
+|   ├─workspace.xml
+|   ├─libraries
+|   |     └element_ui.xml
+|   ├─inspectionProfiles
+|   |         └Project_Default.xml
+|   ├─codeStyles
+|   |     └codeStyleConfig.xml
