@@ -7,6 +7,8 @@
                     click to open the Dialog
                 </el-button>
 
+                <el-checkbox v-model="basemapCheck">隐藏底图</el-checkbox>
+
                 <el-dialog v-model="this.dialogVisible" title="Tips" width="30%" :before-close="handleClose()">
                     <span>This is a message</span>
                     <template #footer>
@@ -39,7 +41,6 @@
 
 <script>
 import MapView from './components/Main.vue';
-import { ref } from 'vue';
 import { ElMessageBox } from 'element-plus';
 
 
@@ -49,7 +50,8 @@ export default {
         return {
             shpFile: '',
             geoJson: '',
-            dialogVisible: ref(false),
+            dialogVisible: false,
+            basemapCheck: false,
         }
     },
     components: {

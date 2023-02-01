@@ -1,8 +1,8 @@
 <template>
     <div id="map" class="map" tabindex="0"></div>
-    <div id="popup" class="ol-popup">
+    <div id="popup" class="ol-popup" v-show="false">
         <a href="#" id="popup-closer" class="ol-popup-closer" @onClick="this.popcloser()"></a>
-        <div id="popup-content">{{ popupContent }}</div>
+        <div id="popup-content" v-html="popupContent"></div>
     </div>
 </template>
 
@@ -21,7 +21,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import "ol/ol.css"
 import { Stroke } from "ol/style";
 import { Fill } from 'ol/style';
-import ZoomToExtent from "ol/control/ZoomToExtent";
+// import {boundingExtent} from 'ol/extent';
 
 const container = document.getElementById('popup');
 // const content = document.getElementById('popup-content');
@@ -32,6 +32,12 @@ const popOut = new Overlay({
     autoPanMargin: 100,
     positioning: 'center-right',
     popupContent: null,
+});
+
+const aviMap = new TileLayer({ // 必备2
+    source: new XYZ({
+        url: 'https://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
+    })
 });
 
 export default {
@@ -56,12 +62,7 @@ export default {
         map_init() {
             this.map = new Map({
                 target: 'map', // 目标容器div层的id值  必备1
-                layers: [new TileLayer({ // 必备2
-                    source: new XYZ({
-                        url: 'https://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
-                    })
-                })
-                ],
+                layers: [aviMap],
                 view: new View({ // 必备3
                     // olProj.fromLonLat方法将经纬度转换成对应的坐标
                     center: Proj.fromLonLat([113.27, 23.13]),
@@ -93,10 +94,7 @@ export default {
             })
             console.log(vectorLayer);
             this.map.addLayer(vectorLayer);
-            let zoomToExtent = new ZoomToExtent({
-                extent: vectorLayer.getExtent() // 不可用？
-            });
-            this.map.addControl(zoomToExtent);
+            this.map.getView().fit(vectorLayer.getSource().getExtent(), this.map.getSize());
         },
 
         mapClick(evt) {
@@ -104,8 +102,10 @@ export default {
             const coordinate = evt.coordinate;
             const hdms = toStringHDMS(Proj.toLonLat(coordinate));
             // content.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
-            this.popupContent = '<p>You clicked here:</p><code>' + hdms + '</code>';
+            // this.popupContent = '<p>You clicked here:</p><code>' + hdms + '</code>';
+            this.popupContent = 'hdms';
             popOut.setPosition(coordinate);
+            popOut.setOffset(hdms);
             this.map.addOverlay(popOut);
         },
 
@@ -114,7 +114,8 @@ export default {
             closer.blur();
             return false;
         }
-
+        
+        
     }
 }
 
