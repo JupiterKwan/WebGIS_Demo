@@ -1,32 +1,50 @@
 # WebGIS Toolkit
 
-## Project setup
+---
 
-```cmd
-npm install
-```
+## 2023.01.14 - 2023.01.20
 
-### Compiles and hot-reloads for development
+本周预期为设计GIS软件中常见的图层管理器、优化shp文件的多文件上传支持、添加对栅格数据的支持。
+不幸的是一个都没有完成。
 
-```cmd
-npm run serve
-```
+### > 遇到的问题
 
-### Compiles and minifies for production
+1. Element-Plus中的`<el-upload>`文件上传，无法在前端获取到文件。
+正常情况下，Element-Plus中选取文件之后，应该在`:onchange`事件中调用函数，在函数中调用`file.raw`来获取文件。然而实际情况下显示无此函数，通过`console.log`尝试获取值，返回undefined。
 
-```cmd
-npm run build
-```
+2. 图层管理器尝试使用Vue和Element-Plus的`v-model`、`v-for`、`el-checkbox-group`来自动生成序列。Vue的父子组件传值尚未理解，思路较为混乱。
 
-### Lints and fixes files
+````text
+Vue中传值常见方法有：
+1. 父组件通过props给子组件传值
+在子组件中注册props，和data的使用方法一致。但是在子组件中为只读该值。
+上周尝试用于传递GeoJson值，但不奏效。在子组件中无法调用。
 
-```cmd
-npm run lint
-```
+2. 父组件通过$refs给子组件传值
+通过在<template>注册子组件，然后父组件就可以用此调用。
+在上周的父组件使用该方法调用子组件函数，但是尝试用于传值不奏效。
 
-### Customize configuration
+3. 通过Provide/Inject用于父子孙组件传值
+！非响应式
+用于跨组件传值。不奏效、不好用、浪费代码浪费心情。
 
-See [Configuration Reference](https://cli.vuejs.org/config/).
+4. eventBus
+还没研究。
+````
+
+综上所述，对Vue的理解仍然不够深入。官方参考文档过于简洁看不懂，网上水文/水视频过多没有参考意义。
+
+3. 对JavaScript以及对网页的动作行为控制的理解还不够深入，要加强学习。
+
+4. 栅格数据文件普遍较大，通常为借助后端的服务器进行存储，比较少通过前端/本地上传进行加载。由于前面几项的失利因此尚未用本地上传shp的方式上传加载。
+
+### > 新的计划
+
+1. 前端对文件处理不大方便进行管理，前后端结合的方式将文件保存在后端更符合正常逻辑。特别是上传多个文件之时，借助后端将会事半功倍。考虑引入GeoServer的方式（仅作为地理数据的存储用）来加载数据。
+
+2. 进行JavaScript、Vue的传值、语法的深入学习，先为后续开发打好基础。
+
+---
 
 ## 2023.01.07 - 2023.01.13
 
@@ -289,14 +307,42 @@ geoJsonToMap(geojson) {
 
 ### > 尚未解决的问题
 
-以下为除上述说明中还出现的问题：
-
 1. 对Vue组件中export default和export的理解尚不全面。
 2. 加载shapefile至地图上的时间过长，经过观察耗时较长的部分为shapefile解析成geoJson、父子组件传值、生成VectorSource。
 3. 目前加载shapefile仅支持单文件zip包解析、以及仅测试了上传一个shapefile文件，对于多次上传和多文件同时上传的功能尚未完善。
 4. 页面样式仍需调整。
+5. 更多问题见注释。
 
-以下为上述说明中出现的问题：
+---
+
+## Project setup
+
+```cmd
+npm install
+```
+
+### Compiles and hot-reloads for development
+
+```cmd
+npm run serve
+```
+
+### Compiles and minifies for production
+
+```cmd
+npm run build
+```
+
+### Lints and fixes files
+
+```cmd
+npm run lint
+```
+
+### Customize configuration
+
+See [Configuration Reference](https://cli.vuejs.org/config/).
+
 [^1]: 对于`data()`的理解尚不全面。
 [^2]: 在JetBrains产品下中会对`mounted()`函数警告为“未使用该函数”。但实际上地图能正常加载。在VScode中未有此警告。
 [^3]: 暂时使用传统html样式，后续替换为`<el-upload>`统一UI框架。

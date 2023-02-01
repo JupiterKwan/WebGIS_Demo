@@ -1,6 +1,8 @@
 <template>
-    <div id="map" class="map" tabindex="0">
-        <div />
+    <div id="map" class="map" tabindex="0"></div>
+    <div id="popup" class="ol-popup">
+        <a href="#" id="popup-closer" class="ol-popup-closer" @onClick="this.popcloser()"></a>
+        <div id="popup-content">{{ popupContent }}</div>
     </div>
 </template>
 
@@ -8,18 +10,29 @@
 import * as Proj from 'ol/proj'
 import Map from 'ol/Map';
 import XYZ from 'ol/source/XYZ';
+import Overlay from 'ol/Overlay';
 import TileLayer from 'ol/layer/Tile';
+import { toStringHDMS } from 'ol/coordinate.js';
 import VectorLayer from 'ol/layer/Vector';
 import Style from 'ol/style/Style';
 import View from 'ol/View';
-// import {ol} from 'ol';
 import VectorSource from 'ol/source/Vector';
-// import {defaults} from 'ol/control';
 import GeoJSON from 'ol/format/GeoJSON';
 import "ol/ol.css"
-import {Stroke} from "ol/style";
-import {Fill} from 'ol/style';
+import { Stroke } from "ol/style";
+import { Fill } from 'ol/style';
 import ZoomToExtent from "ol/control/ZoomToExtent";
+
+const container = document.getElementById('popup');
+// const content = document.getElementById('popup-content');
+const closer = document.getElementById('popup-closer');
+const popOut = new Overlay({
+    element: container,
+    autoPan: true,
+    autoPanMargin: 100,
+    positioning: 'center-right',
+    popupContent: null,
+});
 
 export default {
     name: 'MapView',
@@ -27,14 +40,17 @@ export default {
         return {
             map: null,
             json: '',
-            layerList: [{
-                id: 0,
-                name: '',
-            }],
         };
     },
+    inheritAttrs: true,
     mounted() {
         this.map_init();
+    },
+    props: {
+        layerList: [{
+            id: Number,
+            name: String,
+        }],
     },
     methods: {
         map_init() {
@@ -52,20 +68,14 @@ export default {
                     zoom: 8
                 }),
             });
-            this.layerList.id++;
-            this.layerList.name = '高德底图';
             this.map.on('click', this.mapClick);
         },
-
-        /*mapClick: function (){
-
-        },*/
 
         geoJsonToMap(geojson) {
             this.json = JSON.parse(decodeURIComponent(geojson));
             console.log(this.json);
             let vectorSource = new VectorSource({
-                features: (new GeoJSON({featureProjection: 'EPSG:3857'})).readFeatures(this.json)
+                features: (new GeoJSON({ featureProjection: 'EPSG:3857' })).readFeatures(this.json)
             });
             console.log(vectorSource);
             let vectorLayer = new VectorLayer({
@@ -89,8 +99,25 @@ export default {
             this.map.addControl(zoomToExtent);
         },
 
+        mapClick(evt) {
+            console.log(evt.coordinate);
+            const coordinate = evt.coordinate;
+            const hdms = toStringHDMS(Proj.toLonLat(coordinate));
+            // content.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
+            this.popupContent = '<p>You clicked here:</p><code>' + hdms + '</code>';
+            popOut.setPosition(coordinate);
+            this.map.addOverlay(popOut);
+        },
+
+        popcloser() {
+            popOut.setPosition(undefined);
+            closer.blur();
+            return false;
+        }
+
     }
 }
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -105,4 +132,51 @@ export default {
     outline: #4A74A8 solid 0.15em;
 }
 
+.ol-popup {
+    position: absolute;
+    background-color: white;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    min-width: 280px;
+}
+
+.ol-popup:after,
+.ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+
+.ol-popup:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
+}
+
+.ol-popup:before {
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
+}
+
+.ol-popup-closer {
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
+}
+
+.ol-popup-closer:after {
+    content: "✖";
+}
 </style>
