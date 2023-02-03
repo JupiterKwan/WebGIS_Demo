@@ -2,6 +2,32 @@
 
 ---
 
+## 2023.01.20 - 2023.02.03
+
+新增上传shp后自动缩放显示。
+
+````javascript
+// 添加在VectorLayer图层后
+// vectorLayer.getSource().getExtent()获取图层外接矩形
+this.map.getView().fit(vectorLayer.getSource().getExtent(), this.map.getSize());
+````
+
+![ViewFit](./progress_res/屏幕截图%202023-02-03%20183009.png "ViewFit")
+
+### > 问题
+
+1. GeoServer服务器导入数据后无法预览，Java报错，怀疑服务器文件不完整、或是配置有误。GeoServer用于发布图层以及提供WMS服务等，便于前端加载、上传、存储、修改矢量/栅格数据。
+
+![Geoserver1](./progress_res/屏幕截图%202023-02-03%20210523.png "Geoserver1")
+
+![Geoserver2](./progress_res/屏幕截图%202023-02-03%20205916.png "Geoserver2")
+
+2. 弹窗功能在Element-Plus和ol中都有，分别针对基本界面以及地图内部的弹窗显示。前者为dialog，后者为overlay。各自的操作方法还没理解。
+对dialog的窗体编辑和事件绑定不清楚。设想为在窗体中提供更丰富的上传操作。
+overlay为点击查询做铺垫。对窗体在点击位置渲染、刷新、关闭等均未完成。
+
+![Overlay](./progress_res/屏幕截图%202023-02-03%20210402.png "Overlay")
+
 ## 2023.01.14 - 2023.01.20
 
 本周预期为设计GIS软件中常见的图层管理器、优化shp文件的多文件上传支持、添加对栅格数据的支持。

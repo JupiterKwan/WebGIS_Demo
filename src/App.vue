@@ -9,7 +9,7 @@
 
                 <el-checkbox v-model="basemapCheck">隐藏底图</el-checkbox>
 
-                <el-dialog v-model="this.dialogVisible" title="Tips" width="30%" :before-close="handleClose()">
+                <!-- <el-dialog v-model="dialogVisible" title="Tips" width="30%" :before-close="handleClose()">
                     <span>This is a message</span>
                     <template #footer>
                         <span class="dialog-footer">
@@ -19,7 +19,7 @@
                             </el-button>
                         </span>
                     </template>
-                </el-dialog>
+                </el-dialog> -->
 
             </el-header>
             <el-container class="app-content-panel">
@@ -43,6 +43,8 @@
 import MapView from './components/Main.vue';
 import { ElMessageBox } from 'element-plus';
 
+// eslint-disable-next-line no-unused-vars
+const dialogVisible = false;
 
 export default {
     name: 'App',
@@ -50,7 +52,6 @@ export default {
         return {
             shpFile: '',
             geoJson: '',
-            dialogVisible: false,
             basemapCheck: false,
         }
     },
@@ -67,7 +68,6 @@ export default {
         //             // catch error
         //         })
         // },
-
 
         handleClose() {
 

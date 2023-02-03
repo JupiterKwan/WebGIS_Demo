@@ -1,7 +1,7 @@
 <template>
     <div id="map" class="map" tabindex="0"></div>
-    <div id="popup" class="ol-popup" v-show="false">
-        <a href="#" id="popup-closer" class="ol-popup-closer" @onClick="this.popcloser()"></a>
+    <div id="popup" class="ol-popup" v-show="this.isShow">
+        <a href="#" id="popup-closer" class="ol-popup-closer" @onClick="this.popcloser"></a>
         <div id="popup-content" v-html="popupContent"></div>
     </div>
 </template>
@@ -22,6 +22,15 @@ import "ol/ol.css"
 import { Stroke } from "ol/style";
 import { Fill } from 'ol/style';
 // import {boundingExtent} from 'ol/extent';
+
+// GCJ-02 未使用
+const gcj02Extent = [-20037508.342789244, -20037508.342789244, 20037508.342789244, 20037508.342789244];
+const gcjMecator = new Proj.Projection({
+    code: "GCJ-02",
+    extent: gcj02Extent,
+    units: "m"
+});
+Proj.addProjection(gcjMecator);
 
 const container = document.getElementById('popup');
 // const content = document.getElementById('popup-content');
@@ -46,6 +55,7 @@ export default {
         return {
             map: null,
             json: '',
+            isShow: false,
         };
     },
     inheritAttrs: true,
@@ -84,7 +94,6 @@ export default {
                 style: new Style({
                     stroke: new Stroke({
                         color: '#F70909',
-
                         width: 0.8,
                     }),
                     fill: new Fill({
@@ -103,9 +112,9 @@ export default {
             const hdms = toStringHDMS(Proj.toLonLat(coordinate));
             // content.innerHTML = '<p>You clicked here:</p><code>' + hdms + '</code>';
             // this.popupContent = '<p>You clicked here:</p><code>' + hdms + '</code>';
-            this.popupContent = 'hdms';
+            this.popupContent = '<p>You clicked here:</p><code>' + hdms + '</code>';
             popOut.setPosition(coordinate);
-            popOut.setOffset(hdms);
+            this.isShow = true;
             this.map.addOverlay(popOut);
         },
 
@@ -114,8 +123,8 @@ export default {
             closer.blur();
             return false;
         }
-        
-        
+
+
     }
 }
 
