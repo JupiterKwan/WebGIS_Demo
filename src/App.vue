@@ -3,33 +3,13 @@
         <el-container class="app-out-panel">
             <el-header class="sys-header">
 
-                <el-button text @click="dialogVisible = true">
-                    click to open the Dialog
-                </el-button>
-
-                <el-checkbox v-model="basemapCheck">隐藏底图</el-checkbox>
-
-                <!-- <el-dialog v-model="dialogVisible" title="Tips" width="30%" :before-close="handleClose()">
-                    <span>This is a message</span>
-                    <template #footer>
-                        <span class="dialog-footer">
-                            <el-button @click="this.dialogVisible = false">Cancel</el-button>
-                            <el-button type="primary" @click="this.dialogVisible = false">
-                                Confirm
-                            </el-button>
-                        </span>
-                    </template>
-                </el-dialog> -->
+                <el-button @click="loadBasemap()">{{ isBasemapText }}</el-button>
+                <el-button @click="loadExample()">{{ isExampleText }}</el-button>
 
             </el-header>
             <el-container class="app-content-panel">
                 <el-aside class="layer-control">
                     <input type="file" id="uploadFileInput" name="zip" @change="selectShpFile()" />
-                    <!-- <el-checkbox-group v-model="checkLayerList">
-                        <el-checkbox v-for="item in layerList" :key="item.id" :label="item.data" >
-                            {{ item.data }}
-                        </el-checkbox>
-                    </el-checkbox-group> -->
                 </el-aside>
                 <el-main class="main-map">
                     <MapView ref="MapView" />
@@ -41,7 +21,6 @@
 
 <script>
 import MapView from './components/Main.vue';
-import { ElMessageBox } from 'element-plus';
 
 // eslint-disable-next-line no-unused-vars
 const dialogVisible = false;
@@ -53,31 +32,20 @@ export default {
             shpFile: '',
             geoJson: '',
             basemapCheck: false,
+            enabledExample: "加载示例",
+            disabledExample: "关闭实例",
+            isExample: false,
+            isExampleText: "加载示例",
+            enabledBasemap: "显示底图",
+            disabledBasemap: "隐藏底图",
+            isBasemap: true,
+            isBasemapText: "隐藏底图",
         }
     },
     components: {
         MapView,
     },
     methods: {
-        // const handleClose = (done: () => void) => {
-        //     ElMessageBox.confirm('Are you sure to close this dialog?')
-        //         .then(() => {
-        //             done()
-        //         })
-        //         .catch(() => {
-        //             // catch error
-        //         })
-        // },
-
-        handleClose() {
-
-            ElMessageBox.confirm("Are you sure you want to close?")
-                .then(() => {
-
-                })
-
-        },
-
         selectShpFile() {
             this.shpFile = document.getElementById("uploadFileInput").files[0];
             console.log(this.shpFile);
@@ -96,6 +64,29 @@ export default {
         GeoJsonToMap() {
             console.log(this.geoJson);
             this.$refs.MapView.geoJsonToMap(encodeURIComponent(JSON.stringify(this.geoJson)));
+        },
+
+        loadBasemap() {
+            this.isBasemap = !this.isBasemap;
+            this.$refs.MapView.changeBasemapVisibility();
+            if (!this.isBasemap) {
+                this.isBasemapText = this.enabledBasemap;
+            }
+            else {
+                this.isBasemapText = this.disabledBasemap;
+            }
+        },
+
+        loadExample() {
+            this.isExample = !this.isExample;
+            if (this.isExample) {
+                this.isExampleText = this.disabledExample;
+                this.$refs.MapView.loadExample();
+            }
+            else {
+                this.isExampleText = this.enabledExample;
+                this.$refs.MapView.unloadExample();
+            }
         }
     },
 };

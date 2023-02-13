@@ -19,11 +19,13 @@ import View from 'ol/View';
 import VectorSource from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import "ol/ol.css"
+import tileWMS from 'ol/source/TileWMS';
 import { Stroke } from "ol/style";
 import { Fill } from 'ol/style';
+// import { map } from 'lodash';
 // import {boundingExtent} from 'ol/extent';
 
-// GCJ-02 未使用
+// GCJ-02 未使用 中国地图坐标系标准
 const gcj02Extent = [-20037508.342789244, -20037508.342789244, 20037508.342789244, 20037508.342789244];
 const gcjMecator = new Proj.Projection({
     code: "GCJ-02",
@@ -46,6 +48,7 @@ const popOut = new Overlay({
 const aviMap = new TileLayer({ // 必备2
     source: new XYZ({
         url: 'https://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}',
+        name: 'basemap',
     })
 });
 
@@ -122,11 +125,46 @@ export default {
             popOut.setPosition(undefined);
             closer.blur();
             return false;
-        }
+        },
+
+        loadExample() {
+            const baseSource = new tileWMS({
+                url: 'http://localhost:8999/geoserver/wms',
+                params: {
+                    'LAYERS': 'ne:XZQ_D',
+                    'TILED': true,
+                },
+                serverType: 'geoserver'
+            });
+            const newLayer = new TileLayer({
+                source: baseSource,
+                name: 'example',
+            });
+            this.map.addLayer(newLayer);
+
+            newLayer.once('change', () => {
+                let layerExtent = newLayer.getExtent();
+                console.log("extent:", layerExtent);
+                this.map.getView().fit(layerExtent);
+            })
 
 
+            // this.map.getView().fit("109, 20, 117, 25", this.map.getSize());
+        },
+
+        unloadExample() {
+            const exampleIndex = this.map.getLayers().getArray().findIndex(layer => layer.get("name") === "example");
+            this.map.getLayers().removeAt(exampleIndex);
+        },
+
+        changeBasemapVisibility() {
+            this.map.getLayers().getArray().forEach((layer) => {
+                if (layer.get("name") == "basemap") {
+                    layer.setVisible(false);
+                }})
+            },
     }
-}
+    }
 
 </script>
 
